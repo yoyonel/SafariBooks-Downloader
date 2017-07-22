@@ -93,6 +93,25 @@ An example showing how a SafariBooksOnline with id **9781484224427** is download
 ```bash
 safaribooks-downloader -b 9781484224427 -u nicohaenggi -p MySuperSecurePassword -o /Users/nicohanggi/Desktop/testbook.epub
 ```
+
+### From SafariBooksOnline urls
+
+```bash
+┗ ./from_url.py -h                                                                                                        
+usage: from_url.py [-h] [-o OUTPUT_DIR] [-v] url user passwd
+
+positional arguments:
+  url                   <Required> url link
+  user                  <Required> Safari user
+  passwd                <Required> Safari password
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -o OUTPUT_DIR, --output_dir OUTPUT_DIR
+                        <Optional> Output directory (default: books/)
+  -v, --verbose         increase output verbosity
+```
+
 # Features
 - [x] generating ePub with cover image, authors and publisher
 - [x] custom stylesheets will be imported (only one currently)

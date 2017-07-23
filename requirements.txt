@@ -1,1 +1,3 @@
 colorlog
+voluptuous
+pyyaml

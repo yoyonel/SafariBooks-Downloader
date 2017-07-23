@@ -16,10 +16,55 @@ LOG_LEVEL = logging.DEBUG
 stream = logging.StreamHandler()
 stream.setLevel(LOG_LEVEL)
 stream.setFormatter(formatter)
-logger = logging.getLogger('pythonConfig')
+logger = logging.getLogger(__name__)
 logger.setLevel(LOG_LEVEL)
 logger.addHandler(stream)
 # --------------
+
+
+def launch_safaribooks_downloader(
+    book_id,
+    safari_user,
+    safari_passwd,
+    output_dir,
+    book_name
+):
+    """
+
+    :param book_id:
+    :param safari_user:
+    :param safari_passwd:
+    :param output_dir:
+    :param book_name:
+    """
+    cmd = 'safaribooks-downloader -b {} -u {} -p {} -o {}/{}.epub'.format(
+        book_id,
+        safari_user,
+        safari_passwd,
+        output_dir,
+        book_name
+    )
+    logger.debug("cmd: {}".format(cmd))
+
+    p = Popen(cmd.split(), stdout=PIPE, stdin=PIPE, stderr=STDOUT, bufsize=1)
+    p.stdin.close()  # eof
+    for line in iter(p.stdout.readline, ''):
+        print line,  # do something with the output here
+    p.stdout.close()
+    rc = p.wait()
+    logger.debug("rc: {}".format(rc))
+
+
+def get_book_informations_from_url(url):
+    """
+
+    :param url:
+    :return:
+    """
+    url_tokens = url.split('/')
+    book_id = filter(lambda token: token.isdigit(), url_tokens)[0]
+    book_name = url_tokens[url_tokens.index(book_id) - 1]
+    return book_id, book_name
 
 
 def process(args):
@@ -31,32 +76,20 @@ def process(args):
     safaribooks-downloader -b 9781119077954 -u lionel.atty -p <password> -o "books/fpga-based-implementation-of.epub"
     """
     try:
-        url = args.url
         safari_user = args.user
         safari_passwd = args.passwd
         output_dir = args.output_dir
-        url_tokens = url.split('/')
-        book_id = filter(lambda token: token.isdigit(), url_tokens)[0]
-        book_name = url_tokens[url_tokens.index(book_id) - 1]
+        book_id, book_name = get_book_informations_from_url(args.url)
     except Exception, e:
         logger.error("Exception: {}".format(e))
     else:
-        cmd = 'safaribooks-downloader -b {} -u {} -p {} -o {}/{}.epub'.format(
+        launch_safaribooks_downloader(
             book_id,
             safari_user,
             safari_passwd,
             output_dir,
             book_name
         )
-        logger.debug("cmd: {}".format(cmd))
-
-        p = Popen(cmd.split(), stdout=PIPE, stdin=PIPE, stderr=STDOUT, bufsize=1)
-        p.stdin.close()  # eof
-        for line in iter(p.stdout.readline, ''):
-            print line,  # do something with the output here
-        p.stdout.close()
-        rc = p.wait()
-        logger.debug("rc: {}".format(rc))
 
 
 def parse_arguments():

@@ -112,6 +112,31 @@ optional arguments:
   -v, --verbose         increase output verbosity
 ```
 
+### From Configuration file
+
+```bash
+┗ ./from_file.py -h                                                                                                     
+usage: from_file.py [-h] [-v] configs
+
+positional arguments:
+  configs        <Required> Configs file
+
+optional arguments:
+  -h, --help     show this help message and exit
+  -v, --verbose  increase output verbosity
+```
+
+```bash
+┗ cat configs.yml           
+safari_user: lionel.atty
+safari_password: *********
+safari_urls:
+  - https://www.safaribooksonline.com/library/view/hands-on-machine-learning/9781491962282/
+  - https://www.safaribooksonline.com/library/view/fundamentals-of-deep/9781491925607/
+  - https://www.safaribooksonline.com/library/view/cuda-by-example/9780132180160/
+  - https://www.safaribooksonline.com/library/view/python-machine-learning/9781783555130/
+  ```
+
 # Features
 - [x] generating ePub with cover image, authors and publisher
 - [x] custom stylesheets will be imported (only one currently)

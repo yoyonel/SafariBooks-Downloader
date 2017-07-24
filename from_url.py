@@ -22,6 +22,21 @@ logger.addHandler(stream)
 # --------------
 
 
+def _sprocess_cmd(cmd):
+    """
+
+    :param cmd:
+    :return:
+    """
+    p = Popen(cmd.split(), stdout=PIPE, stdin=PIPE, stderr=STDOUT, bufsize=1)
+    p.stdin.close()  # eof
+    for line in iter(p.stdout.readline, ''):
+        print line,  # do something with the output here
+    p.stdout.close()
+    rc = p.wait()
+    logger.debug("rc: {}".format(rc))
+
+
 def launch_safaribooks_downloader(
     book_id,
     safari_user,
@@ -45,14 +60,7 @@ def launch_safaribooks_downloader(
         book_name
     )
     logger.debug("cmd: {}".format(cmd))
-
-    p = Popen(cmd.split(), stdout=PIPE, stdin=PIPE, stderr=STDOUT, bufsize=1)
-    p.stdin.close()  # eof
-    for line in iter(p.stdout.readline, ''):
-        print line,  # do something with the output here
-    p.stdout.close()
-    rc = p.wait()
-    logger.debug("rc: {}".format(rc))
+    _sprocess_cmd(cmd)
 
 
 def get_book_informations_from_url(url):

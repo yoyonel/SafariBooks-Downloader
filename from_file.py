@@ -32,6 +32,7 @@ logger.addHandler(stream)
 # https://stackoverflow.com/questions/1713038/super-fails-with-error-typeerror-argument-1-must-be-type-not-classobj
 # https://stackoverflow.com/questions/20514525/automatically-shorten-long-strings-when-dumping-with-pretty-print
 class P(pprint.PrettyPrinter, object):
+
     def __init__(self, max_length=10):
         """
 
@@ -61,8 +62,8 @@ def _create_schema():
     return Schema({
         Required('safari_user'): str,
         Required('safari_password'): str,
-        Required('safari_urls'): [Url(str)],
-        Optional('safari_books_ids'): [str, int]
+        Optional('safari_urls'): [Url(str)],
+        Optional('safari_books_ids'): [str]
     })
 
 
@@ -79,7 +80,8 @@ def crypt_config(config, fuzzy_pattern='safari_password', min_ratio=80):
 
     """
     return dict(
-        (k, '*'*len(v) if fuzz.token_set_ratio(k, fuzzy_pattern) > min_ratio else v)
+        (k, '*'*len(v) if fuzz.token_set_ratio(k, fuzzy_pattern)
+         > min_ratio else v)
         for k, v in config.items()
     )
 
@@ -144,7 +146,8 @@ def _process(args):
     schema = _create_schema()
 
     for yaml_config in yaml_configs:
-        logger.debug("yaml_config: {}".format(P().pprint(crypt_config(yaml_config))))
+        logger.debug(
+            "yaml_config: {}".format(P().pprint(crypt_config(yaml_config))))
         try:
             # use the validation schema
             schema(yaml_config)
@@ -155,11 +158,16 @@ def _process(args):
             safari_user = yaml_config['safari_user']
             safari_password = yaml_config['safari_password']
 
-            _launch_downloader_from_urls(yaml_config['safari_urls'], safari_user, safari_password, args.not_download)
+            if 'safari_urls' in yaml_config:
+                _launch_downloader_from_urls(
+                    yaml_config['safari_urls'], safari_user, safari_password,
+                    args.not_download)
 
-            _launch_downloader_from_books_ids(yaml_config['safari_books_ids'],
-                                              safari_user, safari_password,
-                                              args.not_download)
+            if 'safari_books_ids' in yaml_config:
+                _launch_downloader_from_books_ids(
+                    yaml_config['safari_books_ids'],
+                    safari_user, safari_password,
+                    args.not_download)
 
 
 def parse_arguments():
